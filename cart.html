@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luminio - Cart</title>
+    <script>
+        // Load cart items dynamically
+        function loadCart() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "api/cart_items.php", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const cartData = JSON.parse(xhr.responseText);
+                    const cartContainer = document.getElementById('cartItems');
+                    cartContainer.innerHTML = '';
+
+                    if (cartData.length === 0) {
+                        cartContainer.innerHTML = '<p>Your cart is empty.</p>';
+                        return;
+                    }
+
+                    cartData.forEach(item => {
+                        const cartItem = `
+                            <div class="cart-item">
+                                <img src="${item.image}" alt="${item.name}" style="width: 100px;">
+                                <h3>${item.name}</h3>
+                                <p>Price: $${item.price}</p>
+                                <label for="quantity-${item.product_id}">Quantity:</label>
+                                <input type="number" id="quantity-${item.product_id}" value="${item.quantity}" min="1" 
+                                       onchange="updateCart(${item.product_id}, this.value)">
+                                <button onclick="removeFromCart(${item.product_id})">Remove</button>
+                            </div>
+                        `;
+                        cartContainer.innerHTML += cartItem;
+                    });
+                }
+            };
+            xhr.send();
+        }
+
+        // Update cart item quantity
+        function updateCart(productId, quantity) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "api/update_cart.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        alert("Cart updated successfully!");
+                        loadCart();
+                    } else {
+                        alert("Failed to update cart: " + xhr.responseText);
+                    }
+                }
+            };
+            xhr.send(`product_id=${productId}&quantity=${quantity}`);
+        }
+
+        // Remove item from cart
+        function removeFromCart(productId) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "api/remove_from_cart.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        alert("Item removed from cart!");
+                        loadCart();
+                    } else {
+                        alert("Failed to remove item: " + xhr.responseText);
+                    }
+                }
+            };
+            xhr.send(`product_id=${productId}`);
+        }
+
+        // Proceed to checkout
+        function proceedToCheckout() {
+            window.location.href = "checkout.html";
+        }
+    </script>
+</head>
+<body onload="loadCart();">
+    <header>
+        <h1>Your Cart</h1>
+    </header>
+
+    <main>
+        <div id="cartItems">Loading your cart...</div>
+        <button onclick="proceedToCheckout()">Proceed to Checkout</button>
+    </main>
+
+    <footer>
+        <a href="home.html">Back to Home</a>
+    </footer>
+</body>
+</html>

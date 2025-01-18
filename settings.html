@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luminio - Settings</title>
+    <script>
+        // Load user data for profile modification
+        function loadUserData() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "api/user_data.php", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const userData = JSON.parse(xhr.responseText);
+                    document.getElementById('firstName').value = userData.first_name;
+                    document.getElementById('lastName').value = userData.last_name;
+                    document.getElementById('email').value = userData.email;
+                    document.getElementById('address').value = userData.address;
+                    document.getElementById('zipcode').value = userData.zipcode;
+                    document.getElementById('phone').value = userData.phone;
+                }
+            };
+            xhr.send();
+        }
+
+        // Update user profile data
+        function updateProfile() {
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const address = document.getElementById('address').value;
+            const zipcode = document.getElementById('zipcode').value;
+            const phone = document.getElementById('phone').value;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "api/update_profile.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        alert("Profile updated successfully!");
+                    } else {
+                        alert("Failed to update profile: " + xhr.responseText);
+                    }
+                }
+            };
+            xhr.send(`first_name=${firstName}&last_name=${lastName}&email=${email}&address=${address}&zipcode=${zipcode}&phone=${phone}`);
+        }
+
+        // Change user password
+        function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "api/change_password.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        alert("Password changed successfully!");
+                    } else {
+                        alert("Failed to change password: " + xhr.responseText);
+                    }
+                }
+            };
+            xhr.send(`current_password=${currentPassword}&new_password=${newPassword}`);
+        }
+    </script>
+</head>
+<body onload="loadUserData();">
+    <header>
+        <h1>Account Settings</h1>
+    </header>
+
+    <main>
+        <section id="profileSection">
+            <h2>Update Profile Information</h2>
+            <form>
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" required><br>
+
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" required><br>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" required><br>
+
+                <label for="address">Address:</label>
+                <input type="text" id="address" required><br>
+
+                <label for="zipcode">Zip Code:</label>
+                <input type="text" id="zipcode" required><br>
+
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" required><br>
+
+                <button type="button" onclick="updateProfile()">Update Profile</button>
+            </form>
+        </section>
+
+        <section id="passwordSection">
+            <h2>Change Password</h2>
+            <form>
+                <label for="currentPassword">Current Password:</label>
+                <input type="password" id="currentPassword" required><br>
+
+                <label for="newPassword">New Password:</label>
+                <input type="password" id="newPassword" required><br>
+
+                <label for="confirmPassword">Confirm New Password:</label>
+                <input type="password" id="confirmPassword" required><br>
+
+                <button type="button" onclick="changePassword()">Change Password</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <a href="home.html">Back to Home</a>
+    </footer>
+</body>
+</html>

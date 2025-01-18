@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luminio - Product</title>
+    <script>
+        // Load product details dynamically
+        function loadProduct(productId) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", `api/product_details.php?id=${productId}`, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const product = JSON.parse(xhr.responseText);
+                    document.getElementById('productTitle').innerText = product.name;
+                    document.getElementById('productImage').src = product.image;
+                    document.getElementById('productPrice').innerText = `$${product.price}`;
+                    document.getElementById('productDescription').innerText = product.description;
+                    document.getElementById('productRating').innerText = `Rating: ${product.rating} / 5`;
+                }
+            };
+            xhr.send();
+        }
+
+        // Add product to the cart
+        function addToCart(productId) {
+            const quantity = document.getElementById('quantity').value;
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "api/add_to_cart.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        alert("Product added to cart!");
+                    } else {
+                        alert("Failed to add product to cart: " + xhr.responseText);
+                    }
+                }
+            };
+            xhr.send(`product_id=${productId}&quantity=${quantity}`);
+        }
+    </script>
+</head>
+<body onload="loadProduct(1);"> <!-- Replace '1' with dynamic product ID as needed -->
+    <header>
+        <h1>Product Details</h1>
+    </header>
+
+    <main>
+        <h2 id="productTitle">Loading...</h2>
+        <img id="productImage" alt="Product Image" style="max-width: 300px;"><br>
+        <p id="productPrice">Price: Loading...</p>
+        <p id="productDescription">Description: Loading...</p>
+        <p id="productRating">Rating: Loading...</p>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" min="1" value="1">
+        <button onclick="addToCart(1)">Add to Cart</button> <!-- Replace '1' with dynamic product ID -->
+    </main>
+
+    <footer>
+        <a href="home.html">Back to Home</a> | <a href="cart.html">View Cart</a>
+    </footer>
+</body>
+</html>

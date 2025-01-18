@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luminio - Checkout</title>
+    <script>
+        // Load checkout details including cart items and total price
+        function loadCheckout() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "api/checkout_details.php", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const checkoutData = JSON.parse(xhr.responseText);
+                    const cartContainer = document.getElementById('checkoutItems');
+                    cartContainer.innerHTML = '';
+                    let totalPrice = 0;
+
+                    if (checkoutData.items.length === 0) {
+                        cartContainer.innerHTML = '<p>Your cart is empty.</p>';
+                        return;
+                    }
+
+                    checkoutData.items.forEach(item => {
+                        const cartItem = `
+                            <div class="cart-item">
+                                <img src="${item.image}" alt="${item.name}" style="width: 100px;">
+                                <h3>${item.name}</h3>
+                                <p>Price: $${item.price}</p>
+                                <p>Quantity: ${item.quantity}</p>
+                            </div>
+                        `;
+                        cartContainer.innerHTML += cartItem;
+                        totalPrice += item.price * item.quantity;
+                    });
+
+                    document.getElementById('totalPrice').innerText = `Total: $${totalPrice.toFixed(2)}`;
+                }
+            };
+            xhr.send();
+        }
+
+        // Submit order
+        function submitOrder() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "api/submit_order.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        alert("Order placed successfully!");
+                        window.location.href = "home.html"; // Redirect to homepage after successful order
+                    } else {
+                        alert("Failed to place order: " + xhr.responseText);
+                    }
+                }
+            };
+            xhr.send();
+        }
+    </script>
+</head>
+<body onload="loadCheckout();">
+    <header>
+        <h1>Checkout</h1>
+    </header>
+
+    <main>
+        <div id="checkoutItems">Loading your cart...</div>
+        <div id="totalPrice">Total: $0.00</div>
+
+        <h3>Billing Information</h3>
+        <form id="billingForm">
+            <label for="address">Shipping Address:</label>
+            <input type="text" id="address" placeholder="Enter your address" required><br>
+
+            <label for="zipcode">Zip Code:</label>
+            <input type="text" id="zipcode" placeholder="Enter your zip code" required><br>
+
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" placeholder="Enter your phone number" required><br>
+
+            <label for="paymentMethod">Payment Method:</label>
+            <select id="paymentMethod" required>
+                <option value="creditCard">Credit Card</option>
+                <option value="Crypto">Crypto</option>
+                <option value="bankTransfer">Bank Transfer</option>
+            </select><br>
+        </form>
+
+        <button onclick="submitOrder()">Submit Order</button>
+    </main>
+
+    <footer>
+        <a href="cart.html">Back to Cart</a> | <a href="home.html">Back to Home</a>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luminio - Add Product</title>
+</head>
+<body>
+    <header>
+        <h1>Add Product</h1>
+    </header>
+    <main>
+        <section id="AddproductSection">
+            <h2>Add a New Product</h2>
+            <form method="POST" action="php/addproduct.php">
+                <label for="name">Name:</label>
+                <input type="text" id="name" required name="name"><br>
+
+                <label for="price">Price:</label>
+                <input type="number" id="price" required name="price" step="0.01"><br>
+
+                <label for="unit">Unit:</label>
+                <input type="text" id="unit" required name="unit"><br>
+
+                <label for="description">Description:</label>
+                <input type="text" id="description" required name="description"><br>
+
+                <label for="rating">Rating:</label>
+                <input type="number" id="rating" required name="rating" min="1" max="5" step="1"><br>
+
+                <input type="submit" value="Add Product">
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Luminio Bookstore</p>
+    </footer>
+</body>
+</html>

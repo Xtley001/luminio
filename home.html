@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luminio - Home</title>
+    <script>
+        // AJAX to dynamically fetch user data for a personalized greeting
+        function loadUserData() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "api/user_data.php", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const user = JSON.parse(xhr.responseText);
+                    document.getElementById('welcomeMessage').innerText = `Welcome, ${user.first_name} ${user.last_name}!`;
+                }
+            };
+            xhr.send();
+        }
+
+        // AJAX to fetch featured products
+        function loadFeaturedProducts() {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "api/featured_products.php", true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    document.getElementById('featuredProducts').innerHTML = xhr.responseText;
+                }
+            };
+            xhr.send();
+        }
+    </script>
+</head>
+<body onload="loadUserData(); loadFeaturedProducts();">
+    <header>
+        <h1>Luminio - Your Favorite Bookstore</h1>
+        <div id="welcomeMessage">Loading your details...</div>
+    </header>
+
+    <nav>
+        <a href="product.html">Products</a> |
+        <a href="settings.html">Settings</a> |
+        <a href="cart.html">Cart</a>
+    </nav>
+
+    <main>
+        <h2>Featured Products</h2>
+        <div id="featuredProducts">Loading featured books...</div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Luminio. All rights reserved.</p>
+    </footer>
+</body>
+</html>
